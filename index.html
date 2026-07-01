@@ -967,6 +967,9 @@ const ZARATE_NO_RESIDENCIAL = ["Huc1","E","Ep1","I1","I2","EI","BC"];
 const $ = id => document.getElementById(id);
 const fmt = (n, d=2) => (n===null||n===undefined||isNaN(n)) ? '—' : Number(n).toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:d});
 const fmtUSD = n => (n===null||isNaN(n)) ? '—' : 'U$' + Math.round(n).toLocaleString('es-AR');
+const RANGO_PCT = 0.05; // +-5% sobre los valores estimados de factibilidad económica
+const fmtRange = (n, d=2) => (n===null||n===undefined||isNaN(n)) ? '—' : `${fmt(n*(1-RANGO_PCT), d)} – ${fmt(n*(1+RANGO_PCT), d)}`;
+const fmtUSDRange = n => (n===null||isNaN(n)) ? '—' : `${fmtUSD(n*(1-RANGO_PCT))} – ${fmtUSD(n*(1+RANGO_PCT))}`;
 const pct = n => (n*100).toFixed(1).replace(/\.0$/,'') + '%';
 
 let currentZone = null;
@@ -1249,9 +1252,9 @@ function recalc(){
     canjeM2 = vendible*canjePct;
     valorCanje = canjeM2*valorm2;
     valorCash = valorCanje*cashPct;
-    $('out_canjem2').textContent = fmt(canjeM2);
-    $('out_valorcanje').textContent = fmtUSD(valorCanje);
-    $('out_valorcash').textContent = fmtUSD(valorCash);
+    $('out_canjem2').textContent = fmtRange(canjeM2);
+    $('out_valorcanje').textContent = fmtUSDRange(valorCanje);
+    $('out_valorcash').textContent = fmtUSDRange(valorCash);
   } else {
     $('out_canjem2').textContent='—'; $('out_valorcanje').textContent='—'; $('out_valorcash').textContent='—';
   }
@@ -1313,9 +1316,9 @@ function buildMemoria(v){
 
   if(v.vendible!==null && v.valorm2>0){
     h += sect('6. Factibilidad económica');
-    h += step('Canje (m²)', `${fmt(v.vendible)} × ${(v.canjePct*100).toFixed(1)}% = <b>${fmt(v.canjeM2)} m²</b>`);
-    h += step('Valor canje', `${fmt(v.canjeM2)} m² × ${fmtUSD(v.valorm2)} = <b>${fmtUSD(v.valorCanje)}</b>`);
-    h += step('Valor venta cash', `${fmtUSD(v.valorCanje)} × ${(v.cashPct*100).toFixed(0)}% = <b>${fmtUSD(v.valorCash)}</b>`);
+    h += step('Canje (m²)', `${fmt(v.vendible)} × ${(v.canjePct*100).toFixed(1)}% = <b>${fmtRange(v.canjeM2)} m²</b> (±5%)`);
+    h += step('Valor canje', `${fmt(v.canjeM2)} m² × ${fmtUSD(v.valorm2)} = <b>${fmtUSDRange(v.valorCanje)}</b> (±5%)`);
+    h += step('Valor venta cash', `${fmtUSD(v.valorCanje)} × ${(v.cashPct*100).toFixed(0)}% = <b>${fmtUSDRange(v.valorCash)}</b> (±5%)`);
   }
 
   el.innerHTML = h;
@@ -1392,12 +1395,12 @@ function buildReportPrint(v){
       <div class="rp-h">6 · Factibilidad económica</div>
       <table>
         <tr><td class="k">Valor estimado del m² (hoy)</td><td class="v">${fmtUSD(v.valorm2)}</td></tr>
-        <tr><td class="k">Metros que le corresponderían (canje, ${(v.canjePct*100).toFixed(1)}%)</td><td class="v">${fmt(v.canjeM2)} m²</td></tr>
-        <tr><td class="k">Valor de esos metros hoy</td><td class="v">${fmtUSD(v.valorCanje)}</td></tr>
-        <tr><td class="k">Equivalente en efectivo (venta cash, ${(v.cashPct*100).toFixed(0)}%)</td><td class="v">${fmtUSD(v.valorCash)}</td></tr>
+        <tr><td class="k">Metros que le corresponderían (canje, ${(v.canjePct*100).toFixed(1)}%)</td><td class="v">${fmtRange(v.canjeM2)} m²</td></tr>
+        <tr><td class="k">Valor de esos metros hoy</td><td class="v">${fmtUSDRange(v.valorCanje)}</td></tr>
+        <tr><td class="k">Equivalente en efectivo (venta cash, ${(v.cashPct*100).toFixed(0)}%)</td><td class="v">${fmtUSDRange(v.valorCash)}</td></tr>
       </table>
       <div class="rp-mem" style="margin-top:8px;">
-        El "valor de esos metros hoy" corresponde a los ${fmt(v.canjeM2)} m² <b>de este mismo proyecto</b>, valuados al precio de m² estimado arriba. Es una foto del valor actual: si el precio del m² sube o baja más adelante, este monto se actualiza en la misma proporción.
+        Los valores se muestran como un rango (±5%) porque son una estimación, no un número cerrado. El "valor de esos metros hoy" corresponde a los m² <b>de este mismo proyecto</b>, valuados al precio de m² estimado arriba. Es una foto del valor actual: si el precio del m² sube o baja más adelante, este monto se actualiza en la misma proporción.
       </div>
     </div>`;
   }
@@ -1500,7 +1503,21 @@ $('p_manzana').addEventListener('change', recalc);
 ['rp_direccion','rp_agenteNombre','rp_tel','rp_email'].forEach(id =>
   $(id).addEventListener('input', () => { if(lastCalc) buildReportPrint(lastCalc); })
 );
-$('btnPDF').addEventListener('click', () => { if(lastCalc) buildReportPrint(lastCalc); window.print(); });
+$('btnPDF').addEventListener('click', () => {
+  if(!lastCalc) return;
+  buildReportPrint(lastCalc);
+  const direccion = $('rp_direccion').value.trim();
+  const originalTitle = document.title;
+  const slug = direccion
+    ? direccion.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    : 'sin-direccion';
+  document.title = `Potencial-Constructivo_${slug}`;
+  const restoreTitle = () => { document.title = originalTitle; window.removeEventListener('afterprint', restoreTitle); };
+  window.addEventListener('afterprint', restoreTitle);
+  window.print();
+  setTimeout(restoreTitle, 3000);
+});
 $('rp_logo').src = 'data:image/png;base64,' + LOGO_B64;
 $('rp_iso').src = 'data:image/png;base64,' + ISO_B64;
 $('mainLogo').src = 'data:image/png;base64,' + LOGO_B64;
