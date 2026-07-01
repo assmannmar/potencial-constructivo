@@ -526,7 +526,7 @@
           <div class="premio-row">
             <div>
               <label>e) Frente a espacio público (m)</label>
-              <div class="help">¿El lote da frente a una plaza, parque o avenida-parque? Poné cuántos metros de frente tiene sobre ese espacio verde. Si no aplica, dejá en 0.</div>
+              <div class="help">¿El lote es frentista a una plaza, parque zonificado como espacio verde o Avenida-Parque? No es el largo del frente del lote: medí la distancia desde la línea municipal del lote hasta la línea municipal de ese espacio verde (por ejemplo, el ancho de la calle que los separa). Si no aplica, dejá en 0.</div>
               <div class="rule" id="rule_ep">—</div>
               <input type="number" id="p_ep" value="0" step="0.01">
             </div>
@@ -1267,11 +1267,14 @@ function buildReportPrint(v){
     h += `<div class="rp-section">
       <div class="rp-h">6 · Factibilidad económica</div>
       <table>
-        <tr><td class="k">Valor m²</td><td class="v">${fmtUSD(v.valorm2)}</td></tr>
-        <tr><td class="k">Canje (${(v.canjePct*100).toFixed(1)}%)</td><td class="v">${fmt(v.canjeM2)} m²</td></tr>
-        <tr><td class="k">Valor canje</td><td class="v">${fmtUSD(v.valorCanje)}</td></tr>
-        <tr><td class="k">Valor venta cash (${(v.cashPct*100).toFixed(0)}%)</td><td class="v">${fmtUSD(v.valorCash)}</td></tr>
+        <tr><td class="k">Valor estimado del m² (hoy)</td><td class="v">${fmtUSD(v.valorm2)}</td></tr>
+        <tr><td class="k">Metros que le corresponderían (canje, ${(v.canjePct*100).toFixed(1)}%)</td><td class="v">${fmt(v.canjeM2)} m²</td></tr>
+        <tr><td class="k">Valor de esos metros hoy</td><td class="v">${fmtUSD(v.valorCanje)}</td></tr>
+        <tr><td class="k">Equivalente en efectivo (venta cash, ${(v.cashPct*100).toFixed(0)}%)</td><td class="v">${fmtUSD(v.valorCash)}</td></tr>
       </table>
+      <div class="rp-mem" style="margin-top:8px;">
+        El "valor de esos metros hoy" corresponde a los ${fmt(v.canjeM2)} m² <b>de este mismo proyecto</b>, valuados al precio de m² estimado arriba. Es una foto del valor actual: si el precio del m² sube o baja más adelante, este monto se actualiza en la misma proporción.
+      </div>
     </div>`;
   }
 
