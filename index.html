@@ -584,32 +584,6 @@
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-head">INFORME <span class="n">para enviar al cliente</span></div>
-        <div class="card-body">
-          <div class="field">
-            <label>Dirección o partida (aparece en el informe)</label>
-            <input type="text" id="rp_direccion" placeholder="Ej: Av. Mitre 450">
-          </div>
-          <div class="row3">
-            <div class="field">
-              <label>Agente / Vendedor</label>
-              <input type="text" id="rp_agenteNombre" placeholder="Tu nombre">
-            </div>
-            <div class="field">
-              <label>Teléfono</label>
-              <input type="text" id="rp_tel" placeholder="11 1234-5678">
-            </div>
-            <div class="field">
-              <label>Email</label>
-              <input type="text" id="rp_email" placeholder="tu@cademaprop.com.ar">
-            </div>
-          </div>
-          <button id="btnPDF" style="width:100%; padding:12px; font-size:13px; margin-top:4px;">Descargar informe (PDF)</button>
-          <div class="hint" style="margin-top:6px;">Se abre el diálogo de impresión — elegí "Guardar como PDF" como destino.</div>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -617,15 +591,13 @@
     <div class="card-head">TECHO REAL (m² vendibles)</div>
     <div class="card-body">
       <input type="hidden" id="m2_unidad" value="60">
-      <div class="row2">
-        <div class="limit-row" id="row_fot">
-          <span class="lname">por FOT (Sup × FOT final) <span class="badge-bind" id="badge_fot" style="display:none;">limitante</span></span>
-          <span class="lval" id="lim_fot">—</span>
-        </div>
-        <div class="limit-row" id="row_dens">
-          <span class="lname">por Densidad <span style="font-size:10px;">(<span id="lbl_m2u">60</span> m²/unidad)</span> <span class="badge-bind" id="badge_dens" style="display:none;">limitante</span></span>
-          <span class="lval" id="lim_dens">—</span>
-        </div>
+      <div class="limit-row" id="row_fot">
+        <span class="lname">por FOT (Sup × FOT final) <span class="badge-bind" id="badge_fot" style="display:none;">limitante</span></span>
+        <span class="lval" id="lim_fot">—</span>
+      </div>
+      <div class="limit-row" id="row_dens">
+        <span class="lname">por Densidad <span style="font-size:10px;">(<span id="lbl_m2u">60</span> m²/unidad)</span> <span class="badge-bind" id="badge_dens" style="display:none;">limitante</span></span>
+        <span class="lval" id="lim_dens">—</span>
       </div>
 
       <div class="vendible-final">
@@ -676,6 +648,32 @@
         <summary>Ver cómo se calculó, paso a paso</summary>
         <div class="memoria" id="memoriaContent"></div>
       </details>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">INFORME <span class="n">para enviar al cliente</span></div>
+    <div class="card-body">
+      <div class="field">
+        <label>Dirección o partida (aparece en el informe)</label>
+        <input type="text" id="rp_direccion" placeholder="Ej: Av. Mitre 450">
+      </div>
+      <div class="row3">
+        <div class="field">
+          <label>Agente / Vendedor</label>
+          <input type="text" id="rp_agenteNombre" placeholder="Tu nombre">
+        </div>
+        <div class="field">
+          <label>Teléfono</label>
+          <input type="text" id="rp_tel" placeholder="11 1234-5678">
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="text" id="rp_email" placeholder="tu@cademaprop.com.ar">
+        </div>
+      </div>
+      <button id="btnPDF" style="width:100%; padding:12px; font-size:13px; margin-top:4px;">Descargar informe (PDF)</button>
+      <div class="hint" style="margin-top:6px;">Se abre el diálogo de impresión — elegí "Guardar como PDF" como destino.</div>
     </div>
   </div>
 
