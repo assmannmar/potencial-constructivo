@@ -556,39 +556,6 @@
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-head">FACTIBILIDAD ECONÓMICA <span class="n">03 · opcional</span></div>
-        <div class="card-body">
-          <p style="margin:0 0 12px; font-size:12px; color:#333333; line-height:1.5;">
-            Esta parte estima cuánto le correspondería al dueño del lote, según la forma en que prefiera cobrarlo: en metros cuadrados del edificio terminado (<b>canje</b>), o en dinero (<b>venta cash</b>).
-          </p>
-
-          <div class="field">
-            <label>Valor m² (USD)</label>
-            <div class="help">Lo completa el vendedor: es tu estimación de cuánto valdría el m² <b>del edificio ya terminado</b> en esa zona — no el valor del lote en sí.</div>
-            <input type="number" id="e_valorm2" value="1200" step="1">
-          </div>
-
-          <div class="field">
-            <label>Canje (%)</label>
-            <div class="help"><b>Canje</b>: el dueño del lote cobra en metros cuadrados del edificio que se construya ahí, en vez de en dinero. El % suele rondar el <b>12% de los m² vendibles</b> — ajustalo si tu acuerdo es otro.</div>
-            <input type="number" id="e_canje" value="12" step="0.1">
-          </div>
-
-          <div class="field">
-            <label>Venta cash (%)</label>
-            <div class="help"><b>Venta cash</b>: si el dueño prefiere cobrar en dinero en vez de en metros, se suele aplicar un descuento sobre el valor del canje — habitualmente se paga el <b>70% de ese valor</b>.</div>
-            <input type="number" id="e_cash" value="70" step="1">
-          </div>
-
-          <div class="econ-out">
-            <div class="resbox"><span>Canje (m²)</span><b id="out_canjem2">—</b></div>
-            <div class="resbox"><span>Valor canje (USD)</span><b id="out_valorcanje">—</b></div>
-          </div>
-          <div class="resbox" style="margin-top:10px;"><span>Valor venta cash (USD)</span><b id="out_valorcash">—</b></div>
-        </div>
-      </div>
-
     </div>
 
     <!-- RIGHT COLUMN: DIAGRAM + RESULTS -->
@@ -614,34 +581,6 @@
             <div class="resbox"><span>FOS proyecto</span><b id="out_fos">—</b></div>
             <div class="resbox"><span>Densidad final</span><b id="out_dens">—</b></div>
           </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head">TECHO REAL (m² vendibles)</div>
-        <div class="card-body">
-          <div class="limit-row" id="row_fot">
-            <span class="lname">por FOT (Sup × FOT final) <span class="badge-bind" id="badge_fot" style="display:none;">limitante</span></span>
-            <span class="lval" id="lim_fot">—</span>
-          </div>
-          <div class="limit-row" id="row_dens">
-            <span class="lname">por Densidad <span style="font-size:10px;">(<span id="lbl_m2u">60</span> m²/unidad)</span> <span class="badge-bind" id="badge_dens" style="display:none;">limitante</span></span>
-            <span class="lval" id="lim_dens">—</span>
-          </div>
-          <div class="field" style="margin-top:10px; margin-bottom:0;">
-            <label>m² promedio por unidad vendible (supuesto de mercado, editable)</label>
-            <input type="number" id="m2_unidad" value="60" step="1">
-          </div>
-
-          <div class="vendible-final">
-            <span>METROS CUADRADOS VENDIBLES</span>
-            <b id="out_vendible">—</b>
-          </div>
-
-          <details class="memoria-box" style="margin-top:14px;">
-            <summary>Ver cómo se calculó, paso a paso</summary>
-            <div class="memoria" id="memoriaContent"></div>
-          </details>
         </div>
       </div>
 
@@ -674,8 +613,74 @@
     </div>
   </div>
 
+  <div class="card">
+    <div class="card-head">TECHO REAL (m² vendibles)</div>
+    <div class="card-body">
+      <input type="hidden" id="m2_unidad" value="60">
+      <div class="row2">
+        <div class="limit-row" id="row_fot">
+          <span class="lname">por FOT (Sup × FOT final) <span class="badge-bind" id="badge_fot" style="display:none;">limitante</span></span>
+          <span class="lval" id="lim_fot">—</span>
+        </div>
+        <div class="limit-row" id="row_dens">
+          <span class="lname">por Densidad <span style="font-size:10px;">(<span id="lbl_m2u">60</span> m²/unidad)</span> <span class="badge-bind" id="badge_dens" style="display:none;">limitante</span></span>
+          <span class="lval" id="lim_dens">—</span>
+        </div>
+      </div>
+
+      <div class="vendible-final">
+        <span>METROS CUADRADOS VENDIBLES</span>
+        <b id="out_vendible">—</b>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">FACTIBILIDAD ECONÓMICA <span class="n">03 · opcional</span></div>
+    <div class="card-body">
+      <p style="margin:0 0 12px; font-size:12px; color:#333333; line-height:1.5;">
+        Esta parte estima cuánto le correspondería al dueño del lote, según la forma en que prefiera cobrarlo: en metros cuadrados del edificio terminado (<b>canje</b>), o en dinero (<b>venta cash</b>).
+      </p>
+
+      <div class="row3">
+        <div class="field">
+          <label>Valor m² (USD)</label>
+          <div class="help">Lo completa el vendedor: es tu estimación de cuánto valdría el m² <b>del edificio ya terminado</b> en esa zona — no el valor del lote en sí.</div>
+          <input type="number" id="e_valorm2" value="1200" step="1">
+        </div>
+
+        <div class="field">
+          <label>Canje (%)</label>
+          <div class="help"><b>Canje</b>: el dueño del lote cobra en metros cuadrados del edificio que se construya ahí, en vez de en dinero. El % suele rondar el <b>12% de los m² vendibles</b> — ajustalo si tu acuerdo es otro.</div>
+          <input type="number" id="e_canje" value="12" step="0.1">
+        </div>
+
+        <div class="field">
+          <label>Venta cash (%)</label>
+          <div class="help"><b>Venta cash</b>: si el dueño prefiere cobrar en dinero en vez de en metros, se suele aplicar un descuento sobre el valor del canje — habitualmente se paga el <b>70% de ese valor</b>.</div>
+          <input type="number" id="e_cash" value="70" step="1">
+        </div>
+      </div>
+
+      <div class="econ-out">
+        <div class="resbox"><span>Canje (m²)</span><b id="out_canjem2">—</b></div>
+        <div class="resbox"><span>Valor canje (USD)</span><b id="out_valorcanje">—</b></div>
+      </div>
+      <div class="resbox" style="margin-top:10px;"><span>Valor venta cash (USD)</span><b id="out_valorcash">—</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <details class="memoria-box">
+        <summary>Ver cómo se calculó, paso a paso</summary>
+        <div class="memoria" id="memoriaContent"></div>
+      </details>
+    </div>
+  </div>
+
   <div class="footnote">
-    <b>Notas:</b> Los porcentajes de premio se calculan con un motor distinto por ciudad: Campana sigue el Art. 4.1.5 del COU (FOS proporcional a la reducción relativa, retiros laterales con tope conjunto 30%, frente a espacio público desde el primer metro). Zárate sigue el Art. 2.14 de su Código de Planeamiento, que difiere en varios puntos: el ancho de parcela suma 2,5% por metro en forma continua (no por escalones), el premio por FOS es un valor absoluto (5% cada 0,1 de reducción), el frente a espacio público recién empieza a contar a partir de los 10m, los retiros laterales no tienen tope combinado explícito, y existe un premio adicional por englobamiento parcelario que no figura en el código de Campana. El supuesto de "m² por unidad vendible" para el cálculo por densidad <b>no proviene de ningún código</b>: es un parámetro de mercado, editable arriba. La conversión de habitantes a unidades (2 personas/dormitorio) está explícita en el texto de Campana; para Zárate se asume el mismo criterio provincial (Decreto-Ley 8912/77) porque el código no la repite literalmente — confirmalo si tenés otra referencia. La Autoridad de Aplicación conserva margen de decisión sobre estos incrementos — esto es una estimación, no una factibilidad aprobada. La zonificación todavía hay que confirmarla en CartoARBA antes de usar estos números.
+    <b>Notas:</b> Los porcentajes de premio se calculan con un motor distinto por ciudad: Campana sigue el Art. 4.1.5 del COU (FOS proporcional a la reducción relativa, retiros laterales con tope conjunto 30%, frente a espacio público desde el primer metro). Zárate sigue el Art. 2.14 de su Código de Planeamiento, que difiere en varios puntos: el ancho de parcela suma 2,5% por metro en forma continua (no por escalones), el premio por FOS es un valor absoluto (5% cada 0,1 de reducción), el frente a espacio público recién empieza a contar a partir de los 10m, los retiros laterales no tienen tope combinado explícito, y existe un premio adicional por englobamiento parcelario que no figura en el código de Campana. El supuesto de "m² por unidad vendible" para el cálculo por densidad <b>no proviene de ningún código</b>: es un parámetro de mercado fijo en 60 m². La conversión de habitantes a unidades (2 personas/dormitorio) está explícita en el texto de Campana; para Zárate se asume el mismo criterio provincial (Decreto-Ley 8912/77) porque el código no la repite literalmente — confirmalo si tenés otra referencia. La Autoridad de Aplicación conserva margen de decisión sobre estos incrementos — esto es una estimación, no una factibilidad aprobada. La zonificación todavía hay que confirmarla en CartoARBA antes de usar estos números.
   </div>
 
 </div>
