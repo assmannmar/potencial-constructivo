@@ -615,7 +615,7 @@ const ZONIFICACION_CAMPANA_GEOJSON = {"type":"FeatureCollection","features":[{"t
             <label>Zonificación</label>
             <select id="zonificacion"></select>
           </div>
-          <div class="row3">
+          <div class="row2">
             <div class="field">
               <label>Superficie (m²)</label>
               <input type="number" id="superficie" value="235" step="0.01">
@@ -624,10 +624,27 @@ const ZONIFICACION_CAMPANA_GEOJSON = {"type":"FeatureCollection","features":[{"t
               <label>Frente (m)</label>
               <input type="number" id="frente" value="22.35" step="0.01">
             </div>
-            <div class="field">
-              <label>Fondo (m)</label>
-              <input type="number" id="fondo" value="17.1" step="0.01">
-            </div>
+          </div>
+
+          <div class="field">
+            <label>Tipo de lote</label>
+            <select id="tipo_lote">
+              <option value="regular">Regular (rectangular)</option>
+              <option value="irregular">Irregular (forma no pareja)</option>
+              <option value="esquina">Esquina (dos frentes a la calle)</option>
+            </select>
+          </div>
+
+          <div class="field" id="campo_largo" style="display:none;">
+            <label>Largo del lote (m)</label>
+            <div class="help" style="font-size:12px; color:#333333; line-height:1.45; margin:2px 0 4px;">La distancia desde el frente hasta el fondo del terreno, medida por el medio. La sacás del plano de mensura o la escritura.</div>
+            <input type="number" id="largo_irregular" step="0.01">
+          </div>
+
+          <div class="field" id="campo_frente2" style="display:none;">
+            <label>Frente calle 2 (m)</label>
+            <div class="help" style="font-size:12px; color:#333333; line-height:1.45; margin:2px 0 4px;">El otro frente del lote, sobre la segunda calle.</div>
+            <input type="number" id="frente2_esquina" step="0.01">
           </div>
 
           <div class="zone-readout" id="zoneReadout"></div>
@@ -651,7 +668,7 @@ const ZONIFICACION_CAMPANA_GEOJSON = {"type":"FeatureCollection","features":[{"t
           <div class="premio-row">
             <div>
               <label>a) Ancho de parcela</label>
-              <div class="help">Se calcula solo con el <b>Frente</b> que pusiste arriba (<span id="anchoFromFrente">—</span> m) — no hay nada que completar acá. <span style="opacity:0.75;">(Excepción: lote en esquina o de forma irregular — avisame y lo ajustamos a mano.)</span></div>
+              <div class="help" id="anchoHelpTexto">Se calcula solo con el <b>Frente</b> que pusiste arriba (<span id="anchoFromFrente">—</span> m) — no hay nada que completar acá.</div>
               <div class="rule" id="rule_ancho">—</div>
             </div>
             <div></div>
@@ -1355,8 +1372,23 @@ function recalc(){
 
   const sup = parseFloat($('superficie').value) || 0;
   const frente = parseFloat($('frente').value) || 0;
-  const ancho = frente; // el ancho de parcela usa directamente el Frente (sin campo redundante)
-  $('anchoFromFrente').textContent = fmt(frente,2);
+  const tipoLote = $('tipo_lote').value;
+
+  let ancho, fondo;
+  if(tipoLote === 'irregular'){
+    const largo = parseFloat($('largo_irregular').value) || 0;
+    fondo = largo;
+    ancho = largo > 0 ? sup / largo : 0;
+  } else if(tipoLote === 'esquina'){
+    const frente2 = parseFloat($('frente2_esquina').value) || 0;
+    ancho = frente2 > 0 ? Math.min(frente, frente2) : frente;
+    fondo = frente > 0 ? sup / frente : 0; // aproximación, solo para el dibujo del lote
+  } else {
+    ancho = frente;
+    fondo = frente > 0 ? sup / frente : 0;
+  }
+  $('anchoFromFrente').textContent = fmt(ancho,2);
+  $('anchoHelpTexto').style.display = (tipoLote === 'regular') ? 'block' : 'none';
 
   const l1 = parseFloat($('p_l1').value);
   const l2 = parseFloat($('p_l2').value);
@@ -1449,10 +1481,10 @@ function recalc(){
     $('out_canjem2').textContent='—'; $('out_valorcanje').textContent='—'; $('out_valorcash').textContent='—';
   }
 
-  drawLot(sup, frente, parseFloat($('fondo').value)||0, l1, l2, lm, fosProy, fotFinal);
+  drawLot(sup, frente, fondo, l1, l2, lm, fosProy, fotFinal);
 
   const v = {
-    nombre, ciudad: $('ciudad').value, sup, frente, fondo: parseFloat($('fondo').value)||0,
+    nombre, ciudad: $('ciudad').value, sup, frente, fondo, tipoLote,
     ancho, l1, l2, lm, fosProy, ep, lotes, manzanaCompleta,
     pAncho, pLat, pLM, pFOS, pEP, pEnglob, total,
     fosZona, fotZona, densZona, fotFinal, densFinal,
@@ -1472,7 +1504,8 @@ function buildMemoria(v){
 
   let h = '';
   h += sect('1. Premios sobre FOT y Densidad');
-  h += step('a) Ancho de parcela', `${fmt(v.ancho,2)} m → <b>${pct(v.pAncho)}</b>`);
+  const tipoLoteTxt = v.tipoLote === 'irregular' ? ' (irregular: Sup. ÷ Largo)' : (v.tipoLote === 'esquina' ? ' (esquina: menor de los 2 frentes)' : '');
+  h += step('a) Ancho de parcela', `${fmt(v.ancho,2)} m${tipoLoteTxt} → <b>${pct(v.pAncho)}</b>`);
   h += step('b) Retiros laterales', `L1 ${fmt(v.l1,2)}m + L2 ${fmt(v.l2,2)}m → <b>${pct(v.pLat)}</b>`);
   h += step('c) Retiro de línea / L.E.', `${fmt(v.lm,2)} m → <b>${pct(v.pLM)}</b>`);
   h += step('d) FOS de proyecto', `${fmt(v.fosZona,2)} → ${fmt(v.fosProy,2)} → <b>${pct(v.pFOS)}</b>`);
@@ -2032,8 +2065,15 @@ function drawLot(sup, frente, fondo, l1, l2, lm, fosProy, fotFinal){
 ['ciudad'].forEach(id => $(id).addEventListener('change', populateZonas));
 ['ciudad'].forEach(id => $(id).addEventListener('change', () => window.zgActualizarVisibilidad()));
 $('zonificacion').addEventListener('change', onZoneChange);
-['superficie','frente','fondo','p_l1','p_l2','p_lm','p_fos','p_ep','p_lotes','m2_unidad','e_valorm2','e_canje','e_cash']
+['superficie','frente','tipo_lote','largo_irregular','frente2_esquina','p_l1','p_l2','p_lm','p_fos','p_ep','p_lotes','m2_unidad','e_valorm2','e_canje','e_cash']
   .forEach(id => $(id).addEventListener('input', recalc));
+
+$('tipo_lote').addEventListener('change', () => {
+  const t = $('tipo_lote').value;
+  $('campo_largo').style.display = (t === 'irregular') ? 'block' : 'none';
+  $('campo_frente2').style.display = (t === 'esquina') ? 'block' : 'none';
+  recalc();
+});
 $('p_manzana').addEventListener('change', recalc);
 
 ['rp_direccion','rp_agenteNombre','rp_tel','rp_email'].forEach(id =>
